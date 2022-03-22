@@ -4,11 +4,11 @@ services:
 
   mongo:
     image: mongo
-    container_name: mongodb
+    container_name: mongodb_curso
     restart: always
     environment:
       MONGO_INITDB_DATABASE: cursonest
-      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_USERNAME: docker
       MONGO_INITDB_ROOT_PASSWORD: docker
     volumes:
       - ./docker/mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro

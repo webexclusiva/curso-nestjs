@@ -3,6 +3,7 @@ import { CreateJogadorDto } from './dto/jogadores.dto';
 import { Jogador } from './interfaces/jogador.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { UpdateJogadorDto } from './dto/update-jogador.dto';
 
 @Injectable()
 export class JogadoresService {
@@ -14,7 +15,12 @@ export class JogadoresService {
     }
 
     async getJogadorById(_id: string): Promise<Jogador>{
-        return await this.jogadorModel.findById(_id).exec();
+        const jogadorFound = await this.jogadorModel.findOne({_id}).exec();
+
+        if(!jogadorFound)
+            throw new NotFoundException(`Jogador com id ${_id} não encontrado`);
+
+        return jogadorFound;
     }
     
     async getJogadorByEmail(email: string): Promise<Jogador | Jogador[]>{
@@ -28,13 +34,13 @@ export class JogadoresService {
 
     }
 
-    async updateJogador(_id: string, createJogadorDto: CreateJogadorDto) : Promise<void>{
+    async updateJogador(_id: string, updateJogadorDto: UpdateJogadorDto) : Promise<void>{
         const jogadorFound = await this.jogadorModel.findOne({_id}).exec();
 
         if(!jogadorFound)
             throw new NotFoundException(`Jogador com id ${_id} não encontrado`);
 
-        await this.jogadorModel.findOneAndUpdate({_id}, {$set: createJogadorDto}).exec();
+        await this.jogadorModel.findOneAndUpdate({_id}, {$set: updateJogadorDto}).exec();
     }
 
     async createJogador(createJogadorDto: CreateJogadorDto): Promise<Jogador>{
@@ -52,6 +58,11 @@ export class JogadoresService {
     }
 
     async deleteJogador(_id: string): Promise<any>{
-        return await this.jogadorModel.deleteOne({_id}).exec();
+        const jogadorFound = await this.jogadorModel.findOne({_id}).exec();
+
+        if(!jogadorFound)
+            throw new NotFoundException(`Jogador com id ${_id} não encontrado`);
+
+        return await jogadorFound.remove();
     }
 }
